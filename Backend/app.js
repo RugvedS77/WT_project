@@ -42,6 +42,16 @@ app.use('/api/quick-stats', quickStatsRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/linkedin', linkedinRoutes);
 
+const path = require('path');
+// Serve frontend at /social-scheduler
+app.use('/social-scheduler', express.static(path.join(__dirname, '../social-scheduler/dist')));
+
+// Support SPA routing under /social-scheduler
+app.get('/social-scheduler/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../social-scheduler/dist/index.html'));
+});
+
+
 // Global error handler
 app.use((err, req, res, next) => {
     console.error(err.stack);

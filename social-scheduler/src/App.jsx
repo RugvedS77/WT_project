@@ -100,9 +100,11 @@ const router = createBrowserRouter([
       },
     ],
   },
-], {
+], 
+{
   basename: "/social-scheduler"
-});
+}
+);
 
 
 // Main App Component

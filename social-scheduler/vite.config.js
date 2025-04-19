@@ -10,5 +10,9 @@ export default defineConfig({
     allowedHosts: [
       'e606-2401-4900-1c17-8abd-40c6-6ea5-1551-d76c.ngrok-free.app'
     ]
+  },
+  build: {
+    outDir: '../Backend/public', // ← builds into backend folder directly
+    emptyOutDir: true
   }
 })
