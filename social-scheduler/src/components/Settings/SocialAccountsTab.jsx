@@ -1,25 +1,106 @@
-import React, { useState } from 'react';
-import { Trash2, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Trash2 } from 'lucide-react';
+import { useAuth } from './AuthContext';
 
 const SocialAccountsTab = () => {
-  const [accounts, setAccounts] = useState([
-    { id: 1, platform: 'Instagram', username: '@yourinsta', connected: true },
-    { id: 2, platform: 'Twitter', username: '@yourtwitter', connected: true },
-    { id: 3, platform: 'LinkedIn', username: 'Your LinkedIn', connected: true },
-  ]);
 
+  const { currentUser } = useAuth();
+  const [accounts, setAccounts] = useState([]);
+  const [userProfile, setUserProfile] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState(null);
+  const [error, setError] = useState(null);
+  
+  // Load user-specific accounts on mount
+  useEffect(() => {
+    if (currentUser) {
+      fetchUserAccounts(currentUser.id);
+    }
+  }, [currentUser]);
 
-  const removeAccount = (id) => {
-    setAccounts(accounts.filter((acc) => acc.id !== id));
+  const fetchUserAccounts = async (userId) => {
+    const response = await fetch(`/api/users/${userId}/social-accounts`);
+    const data = await response.json();
+    setAccounts(data.accounts);
+  };
+
+  const connectLinkedIn = async () => {
+    try {
+      setIsConnecting(true);
+      const clientId = '867p6n34aeb0et';
+      const redirectUri = encodeURIComponent('http://localhost:5173/social-scheduler/settings');
+      const scope = encodeURIComponent('openid profile w_member_social');
+      const state = encodeURIComponent(Math.random().toString(36).substring(7));
+
+      const authUrl = 
+        `https://www.linkedin.com/oauth/v2/authorization?` +
+        `response_type=code&` +
+        `client_id=${clientId}&` +
+        `redirect_uri=${redirectUri}&` +
+        `state=${state}&` +
+        `scope=${scope}`;
+
+      window.location.href = authUrl;
+    } catch (error) {
+      console.error('LinkedIn connection error:', error);
+      setError('Failed to connect to LinkedIn');
+      setIsConnecting(false);
+    }
+  };
+
+  // Handle LinkedIn callback
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const error = params.get('error');
+    const errorDescription = params.get('error_description');
+
+    if (error || errorDescription) {
+      setError(errorDescription || 'LinkedIn authentication failed');
+      return;
+    }
+
+    if (code) {
+      handleLinkedInCallback(code);
+    }
+  }, []);
+
+  const handleLinkedInCallback = async (code) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/linkedin/callback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to complete LinkedIn authentication');
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        // Add LinkedIn to connected accounts
+        setAccounts(prev => [...prev, {
+          id: Date.now(),
+          platform: 'LinkedIn',
+          username: data.profile.localizedFirstName + ' ' + data.profile.localizedLastName,
+          connected: true
+        }]);
+      }
+    } catch (error) {
+      console.error('LinkedIn callback error:', error);
+      setError(error.message);
+    } finally {
+      setIsConnecting(false);
+    }
   };
 
   const initiateConnection = (platform) => {
     setSelectedPlatform(platform);
     setIsConnecting(true);
     
-    // Platform-specific OAuth implementation
     switch (platform.toLowerCase()) {
       case 'facebook':
         connectFacebook();
@@ -41,66 +122,31 @@ const SocialAccountsTab = () => {
     }
   };
 
-  const connectFacebook = () => {
-    // Meta (Facebook) Graph API implementation
-    const appId = 'YOUR_FACEBOOK_APP_ID';
-    const redirectUri = encodeURIComponent('YOUR_REDIRECT_URI');
-    const scope = encodeURIComponent('pages_manage_posts,pages_read_engagement');
+  const fetchLinkedInUserInfo = async (accessToken) => {
+    const response = await fetch('/api/linkedin/userinfo', {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
     
-    const authUrl = `https://www.facebook.com/v12.0/dialog/oauth?client_id=${appId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code`;
+    if (!response.ok) {
+      throw new Error('Failed to fetch user info');
+    }
     
-    // Open OAuth window
-    window.open(authUrl, '_blank', 'width=600,height=600');
+    return await response.json();
   };
 
-  const connectInstagram = () => {
-    // Instagram uses Facebook's Graph API now
-    const appId = 'YOUR_FACEBOOK_APP_ID';
-    const redirectUri = encodeURIComponent('YOUR_REDIRECT_URI');
-    const scope = encodeURIComponent('instagram_basic,instagram_content_publish');
-    
-    const authUrl = `https://www.facebook.com/v12.0/dialog/oauth?client_id=${appId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code`;
-    
-    window.open(authUrl, '_blank', 'width=600,height=600');
+  const generateRandomString = () => {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   };
 
-  const connectTwitter = () => {
-    // Twitter OAuth 2.0 implementation
-    const clientId = 'YOUR_TWITTER_CLIENT_ID';
-    const redirectUri = encodeURIComponent('YOUR_REDIRECT_URI');
-    const scope = encodeURIComponent('tweet.read tweet.write users.read offline.access');
-    const state = 'twitter-state'; // Should be random and validated later
-    
-    const authUrl = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}&code_challenge=challenge&code_challenge_method=plain`;
-    
-    window.open(authUrl, '_blank', 'width=600,height=600');
-  };
-
-
-  const connectLinkedIn = () => {
-    const clientId = '867p6n34aeb0et';
-    const redirectUri = encodeURIComponent('http://localhost:5173/social-scheduler/');
-    const scope = encodeURIComponent('r_liteprofile r_emailaddress w_member_social');
-    const state = 'linkedin123'; // You can generate a random one
-  
-    const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
-  
-    // Open LinkedIn OAuth window
-    window.open(authUrl, '_blank', 'width=600,height=600');
-  };
-  
-
-  const connectYouTube = () => {
-    // YouTube (Google) OAuth 2.0 implementation
-    const clientId = 'YOUR_GOOGLE_CLIENT_ID';
-    const redirectUri = encodeURIComponent('YOUR_REDIRECT_URI');
-    const scope = encodeURIComponent('https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube');
-    const state = 'youtube-state'; // Should be random and validated later
-    
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}&response_type=code&access_type=offline&prompt=consent`;
-    
-    window.open(authUrl, '_blank', 'width=600,height=600');
-  };
+  // Show error message if present
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   // Available platforms to connect
   const availablePlatforms = [
@@ -111,9 +157,15 @@ const SocialAccountsTab = () => {
     { name: 'YouTube', icon: 'youtube', color: 'bg-red-600' },
     { name: 'Pinterest', icon: 'pinterest', color: 'bg-red-500' },
   ];
-
+  
   return (
     <div className="space-y-6">
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
+
       <h2 className="text-2xl font-bold">Connected Social Accounts</h2>
       
       {/* Connected Accounts List */}
@@ -123,6 +175,16 @@ const SocialAccountsTab = () => {
             <div>
               <h4 className="font-medium">{account.platform}</h4>
               <p className="text-sm text-gray-500">{account.username}</p>
+              {account.platform === 'LinkedIn' && userProfile && (
+                <div className="mt-2 flex items-center">
+                  <img 
+                    src={userProfile.picture} 
+                    alt="Profile" 
+                    className="w-8 h-8 rounded-full mr-2"
+                  />
+                  <span>{userProfile.email}</span>
+                </div>
+              )}
             </div>
             <button
               onClick={() => removeAccount(account.id)}

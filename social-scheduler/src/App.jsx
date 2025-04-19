@@ -13,6 +13,9 @@ import LandingPage from './pages/LandingPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';  // Import the new Privacy Policy page
 import TermsOfServicePage from './pages/TermsOfServicePage'; 
 import UserDataDeletionPage from './pages/UserDataDeletionPage'; 
+import LinkedInCallback from './components/Settings/LinkedInCallback'; // Import LinkedIn callback component
+import { AuthProvider } from './components/Settings/AuthContext'; 
+import { useAuth } from './components/Settings/AuthContext';
 
 // Layout Components
 function AuthLayout() {
@@ -82,12 +85,18 @@ const router = createBrowserRouter([
           { path: 'privacy-policy', element: <PrivacyPolicyPage /> },
           { path: 'terms-of-service', element: <TermsOfServicePage /> },
           { path: 'user-data-deletion', element: <UserDataDeletionPage /> }, // New route
+          { path: 'settings/auth/linkedin/callback', element: <LinkedInCallback /> }, // LinkedIn callback route
         ],
       },
       // Redirects
       {
         path: 'login',
         element: <Navigate to="/auth/login" replace />,
+      },
+      // LinkedIn callback route with new redirect URI
+      {
+        path: 'social-scheduler',
+        element: <LinkedInCallback />,
       },
     ],
   },
@@ -103,7 +112,9 @@ function App() {
   
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
-      <RouterProvider router={router} />
+      < AuthProvider >
+        <RouterProvider router={router} />
+      </AuthProvider>
     </GoogleOAuthProvider>
     
   );
