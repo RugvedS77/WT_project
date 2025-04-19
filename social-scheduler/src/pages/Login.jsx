@@ -1,84 +1,80 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import axios from "axios";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../components/Settings/AuthContext';
+import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
+import { GoogleLogin } from '@react-oauth/google';
 
-const CLIENT_ID = "91442474676-1tgi4tffeud6fjvffubbag90vfmfqbdr.apps.googleusercontent.com";
-
-const Login = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    !!localStorage.getItem("token") || localStorage.getItem("isAuthenticated") === "true"
-  );
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const [error, setError] = useState("");
+export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoggingIn(true);
-    setError("");
+    setError('');
+    setLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/auth/login",
-        { username, password },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      );
-
-      if (response.data.success) {
-        setIsAuthenticated(true);
-        localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("token", response.data.token);
-        navigate("/dashboard");
+      const result = await login(formData.email, formData.password);
+      if (result.success) {
+        toast.success('Login successful!');
+        navigate('/dashboard');
       } else {
-        setError(response.data.message || "Login failed");
+        setError(result.error || 'Failed to login');
+        toast.error(result.error || 'Failed to login');
       }
     } catch (error) {
-      console.error("Login error:", error);
-      setError(error.response?.data?.message || "Login failed. Please try again.");
+      setError('Failed to login');
+      toast.error('Failed to login');
     } finally {
-      setIsLoggingIn(false);
+      setLoading(false);
     }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleGoogleSuccess = async (credentialResponse) => {
-    setGoogleLoading(true);
-    setError("");
-
     try {
-      const response = await axios.post(
-        "http://localhost:3000/auth/google",
-        { credential: credentialResponse.credential },
-        { withCredentials: true }
-      );
+      const response = await fetch('http://localhost:3000/auth/google', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          credential: credentialResponse.credential,
+        }),
+      });
 
-      if (response.data.success) {
-        setIsAuthenticated(true);
-        localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("token", response.data.token);
-        navigate("/dashboard");
-      } else {
-        setError("Google authentication failed");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Google login failed');
       }
+
+      localStorage.setItem('token', data.token);
+      toast.success('Login successful!');
+      navigate('/dashboard');
     } catch (error) {
-      console.error("Google auth error:", error);
-      setError("Failed to authenticate with Google");
-    } finally {
-      setGoogleLoading(false);
+      setError('Google login failed');
+      toast.error('Google login failed');
     }
   };
 
-  const handleGoogleFailure = () => {
-    setError("Google login failed. Please try another method.");
+  const handleGoogleError = () => {
+    setError('Google login failed');
+    toast.error('Google login failed');
   };
 
   return (
@@ -91,118 +87,109 @@ const Login = () => {
         transition={{ duration: 0.5 }}
       />
 
-      <GoogleOAuthProvider clientId={CLIENT_ID}>
-        <motion.div
-          className="relative z-10 w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg"
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
-          <h2 className="text-3xl font-bold text-center text-gray-800">Login</h2>
+      <motion.div
+        className="relative z-10 w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
+        <h2 className="text-3xl font-bold text-center text-gray-800">Login</h2>
 
-          {error && (
-            <motion.div
-              className="p-3 text-sm text-red-700 bg-red-100 rounded-lg"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              {error}
-            </motion.div>
-          )}
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            <motion.div
-              initial={{ x: -10, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </motion.div>
-
-            <motion.div
-              initial={{ x: -10, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.4 }}
-            >
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </motion.div>
-
-            <motion.div
-              initial={{ y: 10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              <button
-                type="submit"
-                disabled={isLoggingIn}
-                className={`w-full px-4 py-2 text-white rounded-lg transition-colors ${
-                  isLoggingIn ? "bg-gray-500" : "bg-blue-600 hover:bg-blue-700"
-                }`}
-              >
-                {isLoggingIn ? "Logging in..." : "Login"}
-              </button>
-            </motion.div>
-          </form>
-
-          <div className="flex items-center">
-            <div className="flex-grow border-t border-gray-300"></div>
-            <span className="px-3 text-gray-500">or</span>
-            <div className="flex-grow border-t border-gray-300"></div>
-          </div>
-
+        {error && (
           <motion.div
-            className="flex justify-center"
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.6 }}
+            className="p-3 text-sm text-red-700 bg-red-100 rounded-lg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
           >
-            {googleLoading ? (
-              <p className="text-gray-600">Logging in with Google...</p>
-            ) : (
-              <GoogleLogin 
-                onSuccess={handleGoogleSuccess} 
-                onError={handleGoogleFailure}
-                shape="pill"
-                theme="filled_blue"
-                size="large"
-                text="continue_with"
-              />
-            )}
+            {error}
+          </motion.div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <motion.div
+            initial={{ x: -10, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
           </motion.div>
 
-          <motion.p
-            className="text-sm text-center text-gray-600"
+          <motion.div
+            initial={{ x: -10, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+          </motion.div>
+
+          <motion.div
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.7 }}
+            transition={{ delay: 0.5 }}
           >
-            Don't have an account?{" "}
             <button
-              onClick={() => navigate("/register")}
-              className="text-blue-600 hover:text-blue-800 hover:underline focus:outline-none"
+              type="submit"
+              disabled={loading}
+              className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Register
+              {loading ? 'Logging in...' : 'Login'}
             </button>
-          </motion.p>
-        </motion.div>
-      </GoogleOAuthProvider>
+          </motion.div>
+        </form>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            useOneTap
+            theme="outline"
+            shape="rectangular"
+            locale="en"
+            text="signin_with"
+            width="100%"
+          />
+        </div>
+
+        <motion.p
+          className="text-sm text-center text-gray-600"
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
+          Don't have an account?{' '}
+          <Link
+            to="/register"
+            className="text-blue-600 hover:text-blue-800 hover:underline focus:outline-none"
+          >
+            Register
+          </Link>
+        </motion.p>
+      </motion.div>
     </div>
   );
-};
-
-export default Login;
+}

@@ -11,6 +11,7 @@ const quickStatsRoutes = require('./routes/quickStatsRoutes');
 const postRoutes = require('./routes/postRoutes');
 const linkedinRoutes = require('./routes/linkedinRoutes');
 const preferenceRoutes = require('./routes/preferenceRoutes');
+const draftRoutes = require('./routes/draftRoutes');
 const cors = require('cors');
 
 const app = express();
@@ -41,15 +42,16 @@ app.use('/api/accounts', accountRoutes);
 app.use('/api/quick-stats', quickStatsRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/linkedin', linkedinRoutes);
+app.use('/api/drafts', draftRoutes);
 
-const path = require('path');
-// Serve frontend at /social-scheduler
-app.use('/social-scheduler', express.static(path.join(__dirname, '../social-scheduler/dist')));
+// const path = require('path');
+// // Serve frontend at /social-scheduler
+// app.use('/social-scheduler', express.static(path.join(__dirname, '../social-scheduler/dist')));
 
-// Support SPA routing under /social-scheduler
-app.get('/social-scheduler/*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../social-scheduler/dist/index.html'));
-});
+// // Support SPA routing under /social-scheduler
+// app.get('/social-scheduler/*', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../social-scheduler/dist/index.html'));
+// });
 
 
 // Global error handler
