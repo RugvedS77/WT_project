@@ -8,8 +8,8 @@ router.get('/', verifyToken, async (req, res) => {
         const userId = req.user._id;
 
         // Fetch counts from the database
-        const scheduledPostsCount = await Post.countDocuments({ userId, scheduled: true });
-        const publishedPostsCount = await Post.countDocuments({ userId, scheduled: false });
+        const scheduledPostsCount = await Post.countDocuments({ userId, status: "scheduled" });
+        const publishedPostsCount = await Post.countDocuments({ userId, status: "published" });
         const avgEngagement = '24%'; // Placeholder for engagement calculation
 
         const stats = [

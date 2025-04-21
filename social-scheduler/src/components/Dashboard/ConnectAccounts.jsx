@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import ConnectAccountsLoading from "../LoadingComponents/ConnectAccountsLoading";
-
+import axios from 'axios';
 export default function ConnectedAccounts() {
 
     const [isLoading, setIsLoading] = useState(false);
@@ -9,27 +9,35 @@ export default function ConnectedAccounts() {
       { icon: 'instagram', color: 'bg-gradient-to-br from-pink-500 to-yellow-500', name: 'Instagram', status: 'Connected' },
       { icon: 'twitter', color: 'bg-blue-400', name: 'Twitter', status: 'Connected' },
       { icon: 'youtube', color: 'bg-red-500', name: 'YouTube', status: 'Not Connected' },
+      { icon: 'linkedin-in', color: 'bg-blue-800', name: 'LinkedIn', status: 'Connected' },
       { icon: 'whatsapp', color: 'bg-green-500', name: 'WhatsApp', status: 'Not Connected' },
       { icon: 'plus', color: 'bg-gray-800', name: 'Add More', status: '' }
     ]);
 
     useEffect(() => {
-      async function fetchConnectedAccounts(){
-        setIsLoading(true);
-        try {
-          const response = await fetch('http://localhost:3000/ConnectedAccounts');
 
-          if(!response.ok){
-            throw new Error(`HTTP error! status ${response.status}`)
-          }
-          const data = response.json();
-          setAccounts(data);
-        } catch(error) {
-          console.error('Error fetching connected Accounts: ',error)
-        } finally {
-          setIsLoading(false);
+async function fetchConnectedAccounts() {
+  setIsLoading(true);
+  try {
+    const response = await axios.get(
+      'http://localhost:3000/api/accounts/connected', // Correct endpoint
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       }
+    );
+
+    setAccounts(response.data);
+  } catch (error) {
+    console.error('Error fetching connected accounts:', error);
+    if (error.response) {
+      console.error('Server responded with:', error.response.status);
+    }
+  } finally {
+    setIsLoading(false);
+  }
+}
 
       fetchConnectedAccounts();
     },[])

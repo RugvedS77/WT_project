@@ -4,11 +4,17 @@ const mongoose = require('mongoose');
 const postSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   content: { type: String, required: true },
-  imageUrl: { type: String }, // Field to store the image URL
-  tags: { type: [String], default: [] }, // Array of tags
-  visibility: { type: String, enum: ['Public', 'Private', 'Friends'], default: 'Public' }, // Post visibility
-  scheduled: { type: Boolean, default: false },
-  scheduledDate: { type: Date }, // Date for scheduled posts
+  imageUrl: { type: String }, 
+  tags: { type: [String], default: [] }, 
+  visibility: { type: String, enum: ['Public', 'Private', 'Friends'], default: 'Public' }, 
+  scheduledDate: { type: Date }, 
+  status: {
+    type: String,
+    enum: ['draft', 'scheduled', 'published'],
+    default: 'draft'
+  },
 }, { timestamps: true });
+
+postSchema.index({ userId: 1, status: 1 });
 
 module.exports = mongoose.model('Post', postSchema);

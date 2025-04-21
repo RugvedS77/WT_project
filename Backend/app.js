@@ -11,6 +11,8 @@ const quickStatsRoutes = require('./routes/quickStatsRoutes');
 const postRoutes = require('./routes/postRoutes');
 const linkedinRoutes = require('./routes/linkedinRoutes');
 const preferenceRoutes = require('./routes/preferenceRoutes');
+const shareRoutes = require('./routes/shareRoutes');
+const postController = require('./controllers/postController');
 const cors = require('cors');
 
 const app = express();
@@ -41,7 +43,9 @@ app.use('/api/accounts', accountRoutes);
 app.use('/api/quick-stats', quickStatsRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/linkedin', linkedinRoutes);
+app.use('/api/share', shareRoutes);
 
+setInterval(postController.checkScheduledPosts, 60 * 1000);
 // Global error handler
 app.use((err, req, res, next) => {
     console.error(err.stack);

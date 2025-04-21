@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const path = require('path'); // Import the path module
-const fs = require('fs'); // Import the fs module
+const path = require('path');
+const fs = require('fs');
 const verifyToken = require('../middleware/verifyToken');
 const postController = require('../controllers/postController');
 
-// Configure multer for image uploads
+// Configure multer storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, '..', 'uploads');
+    const uploadPath = path.join(__dirname, '../../uploads');
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
@@ -17,11 +17,15 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
-  },
+  }
 });
+
 const upload = multer({ storage });
 
-// Create a new post
-router.post('/create', verifyToken, upload.single('image'), postController.createPost);
+// Post routes
+router.post('/', verifyToken, upload.single('image'), postController.createPost);
+router.get('/', verifyToken, postController.getPostsByStatus);
+router.put('/:id', verifyToken, upload.single('image'), postController.updatePost);
+router.delete('/:id', verifyToken, postController.deletePost);
 
 module.exports = router;
