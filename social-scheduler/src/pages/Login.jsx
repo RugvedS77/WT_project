@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode"; // Import jwt-decode to decode Google's JWT
 
 const CLIENT_ID = "91442474676-1tgi4tffeud6fjvffubbag90vfmfqbdr.apps.googleusercontent.com";
 
@@ -38,6 +39,7 @@ const Login = () => {
         setIsAuthenticated(true);
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("token", response.data.token);
+        localStorage.setItem("username", username); // Store username
         navigate("/dashboard");
       } else {
         setError(response.data.message || "Login failed");
@@ -55,9 +57,18 @@ const Login = () => {
     setError("");
 
     try {
+      // Decode the JWT to get user info
+      const decoded = jwtDecode(credentialResponse.credential);
+      const googleUsername = decoded.name; // Extract name from Google profile
+      const googleEmail = decoded.email; // Extract email
+
       const response = await axios.post(
         "http://localhost:3000/auth/google",
-        { credential: credentialResponse.credential },
+        { 
+          credential: credentialResponse.credential,
+          username: googleUsername, // Send username to backend
+          email: googleEmail
+        },
         { withCredentials: true }
       );
 
@@ -65,13 +76,14 @@ const Login = () => {
         setIsAuthenticated(true);
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("token", response.data.token);
+        localStorage.setItem("username", googleUsername); // Store username from Google
         navigate("/dashboard");
       } else {
         setError("Google authentication failed");
       }
     } catch (error) {
       console.error("Google auth error:", error);
-      setError("Failed to authenticate with Google");
+      setError(error.response?.data?.message || "Failed to authenticate with Google");
     } finally {
       setGoogleLoading(false);
     }

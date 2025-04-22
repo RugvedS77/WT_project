@@ -4,7 +4,7 @@ import Sidebar from './components/Sidebar';
 import DashboardPage from './pages/DashboardPage';
 import CreatePostPage from './pages/CreatePostPage';
 import CalendarPage from './pages/CalendarPage';
-import AnalyticsPage from './pages/AnalyticsPage';
+import DraftsPage from './pages/DraftsPage';
 import SettingsPage from './pages/SettingsPage';
 import ProfilePage from './pages/ProfilePage';
 import Login from './pages/Login';
@@ -78,7 +78,7 @@ const router = createBrowserRouter([
           { path: 'dashboard', element: <DashboardPage /> },
           { path: 'create-post', element: <CreatePostPage /> },
           { path: 'calendar', element: <CalendarPage /> },
-          { path: 'analytics', element: <AnalyticsPage /> },
+          { path: 'draft', element: <DraftsPage /> },
           { path: 'settings', element: <SettingsPage /> },
           { path: 'profile', element: <ProfilePage /> },
           // Adding Privacy Policy, Terms of Service, and User Data Deletion routes

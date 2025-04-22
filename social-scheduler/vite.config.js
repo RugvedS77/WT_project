@@ -7,8 +7,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: '/social-scheduler',
   server: {
-    allowedHosts: [
-      'e606-2401-4900-1c17-8abd-40c6-6ea5-1551-d76c.ngrok-free.app'
-    ]
+    proxy: {
+      '/uploads': 'http://localhost:3000'
+    }
   }
 })

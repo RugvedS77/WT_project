@@ -24,6 +24,7 @@ export default function AccountTab() {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            console.log(response)
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Failed to fetch user data');

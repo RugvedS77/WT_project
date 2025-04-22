@@ -1,15 +1,32 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 const pages = [
   { name: 'dashboard', icon: 'fa-tachometer-alt' },
   { name: 'create-post', icon: 'fa-plus-circle' },
   { name: 'calendar', icon: 'fa-calendar-alt' },
-  { name: 'analytics', icon: 'fa-chart-line' },
+  { name: 'draft', icon: 'fa-chart-line' },
   { name: 'settings', icon: 'fa-cog' }
 ];
 
 export default function Sidebar() {
   const location = useLocation();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/user/userData');
+        if (!response.ok) throw new Error('Failed to fetch user');
+        const data = await response.json();
+        setUser(data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const formatName = (name) => {
     return name.split('-')
@@ -53,14 +70,20 @@ export default function Sidebar() {
               ? 'bg-blue-600' 
               : 'hover:bg-gray-700'}`}
         >
-          <img 
-            src="https://randomuser.me/api/portraits/women/44.jpg" 
-            alt="Profile" 
-            className="w-10 h-10 rounded-full" 
-          />
+          {user?.photoUrl ? (
+            <img 
+              src={user.photoUrl} 
+              alt="Profile" 
+              className="w-10 h-10 rounded-full object-cover" 
+            />
+          ) : (
+            <div className="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full">
+              <i className="fas fa-user text-white"></i>
+            </div>
+          )}
           <div>
-            <p className="font-medium">Sarah Johnson</p>
-            <p className="text-xs text-gray-400">Admin</p>
+            <p className="font-medium">{user?.name || user?.username || 'Loading...'}</p>
+            <p className="text-xs text-gray-400">{user?.provider === 'google' ? 'Google User' : 'Local User'}</p>
           </div>
         </Link>
       </div>

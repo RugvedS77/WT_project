@@ -9,7 +9,8 @@ const postController = require('../controllers/postController');
 // Configure multer storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, '../../uploads');
+    // Use path.resolve to get an absolute path
+    const uploadPath = path.resolve(__dirname, '../uploads');
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }

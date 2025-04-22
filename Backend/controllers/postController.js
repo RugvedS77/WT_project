@@ -30,9 +30,11 @@ exports.createPost = async (req, res) => {
     await newPost.save();
     
     res.status(201).json({
-      message: status === 'draft' ? 'Draft saved' : 
-              status === 'scheduled' ? 'Post scheduled' : 'Post published',
-      post: newPost
+      message: 'Post created',
+      post: {
+        ...newPost.toObject(),
+        imageUrl: req.file ? `http://localhost:3000/uploads/${req.file.filename}` : null
+      }
     });
   } catch (error) {
     console.error('Error creating post:', error);

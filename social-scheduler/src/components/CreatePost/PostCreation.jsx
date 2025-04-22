@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import EmojiPicker from './EmojiPicker';
@@ -58,7 +56,10 @@ export default function PostEditor() {
                 setVisibility(data.visibility || 'Public');
                 setScheduleDate(data.scheduledDate || '');
                 setSelectedAccounts(data.platforms || []);
-                if (data.imageUrl) setPreview(data.imageUrl);
+                if (data.imageUrl) {
+                    // Prepend the backend URL
+                    setPreview(`http://localhost:3000${data.imageUrl}`);
+                  }
             }
         } catch (err) {
             console.error('Error fetching post:', err);
@@ -165,7 +166,7 @@ export default function PostEditor() {
             const action = isEditMode ? 'updated' : 'created';
             const type = isDraft ? 'draft' : 'post';
             alert(`${type.charAt(0).toUpperCase() + type.slice(1)} ${action} successfully!`);
-            navigate(isDraft ? '/analytics' : '/dashboard');
+            navigate(isDraft ? '/draft' : '/dashboard');
         } else {
             throw new Error('Submission failed');
         }
@@ -440,12 +441,7 @@ export default function PostEditor() {
                                 className="hidden"
                             />
                         </label>
-                        <button
-                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                            className="text-blue-500 hover:text-blue-700"
-                        >
-                            <i className="far fa-smile mr-1"></i> Emoji
-                        </button>
+                        
                         <button
                             onClick={() => handleSubmit(false)}
                             disabled={isProcessing}

@@ -1,30 +1,60 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 
-// Social platform logos (replace with actual image paths)
 const platformLogos = {
-  instagram: './logos/instagram.jpeg',
-  facebook: './logos/facebook.jpeg',
-  youtube: './logos/youtube.jpeg',
-  twitter: './logos/twitter.jpeg',
-  linkedin: './logos/linkedIn.jpeg',
-  pinterest: './logos/pinterest.jpeg',
-  whatsapp: './logos/whatsapp.jpeg',
+  instagram: './images/instagram.png',
+  facebook: './images/facebook.jpg',
+  youtube: './images/youtube.jpg',
+  twitter: './images/twitter.png',
+  linkedin: './images/linkedIn.png',
+  pinterest: './images/pinterest.png',
+
 };
 
-// Replace with your actual hero image path
-const heroImage = './images/social-media-dashboard.jpeg';
+const heroImage = './images/social-media-dashboard.jpg';
+
+const features = [
+  {
+    title: "Visual Content Calendar",
+    description: "Drag-and-drop interface for effortless scheduling across all platforms",
+    icon: "fas fa-calendar-alt",
+    color: "text-blue-500"
+  },
+  {
+    title: "AI-Powered Optimization",
+    description: "Smart suggestions for best posting times based on your audience",
+    icon: "fas fa-brain",
+    color: "text-purple-500"
+  },
+  {
+    title: "Multi-Account Management",
+    description: "Handle all your client accounts from one centralized dashboard",
+    icon: "fas fa-users",
+    color: "text-green-500"
+  },
+  {
+    title: "Performance Analytics",
+    description: "Track engagement and growth across all your social channels",
+    icon: "fas fa-chart-line",
+    color: "text-yellow-500"
+  }
+];
 
 export default function LandingPage() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('scheduling');
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
 
-    function loginUser(){
-        navigate('/login');
-    }
-
-    function registerUser(){
-        navigate('/register');
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Here you would typically send the email to your backend
+    console.log("Subscribed with:", email);
+    setSubscribed(true);
+    setEmail('');
+    setTimeout(() => setSubscribed(false), 5000);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -32,35 +62,35 @@ export default function LandingPage() {
       <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <i className="fas fa-calendar-alt text-2xl text-blue-600"></i>
-          <span className="text-2xl font-bold text-gray-800">Social Scheduler</span>
+          <span className="text-2xl font-bold text-gray-800">SocialSync</span>
         </div>
         <div className="flex items-center space-x-6">
-          <button onClick={loginUser} className="text-gray-700 hover:text-blue-600">Login</button>
+          <button onClick={() => navigate('/login')} className="text-gray-700 hover:text-blue-600 font-medium">Login</button>
           <button 
-            onClick={registerUser} 
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            onClick={() => navigate('/register')} 
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
-            Get Started
+            Get Started Free
           </button>
         </div>
       </nav>
 
-      {/* Hero Section with Image */}
-      <section className="container mx-auto px-6 py-12 md:py-20" >
+      {/* Hero Section */}
+      <section className="container mx-auto px-6 py-12 md:py-20">
         <div className="flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 mb-10 md:mb-0 md:pr-10">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
-              Unify Your <span className="text-blue-600">Social Presence</span>
+              Schedule Smarter, <span className="text-blue-600">Grow Faster</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-10">
-              Schedule, publish, and analyze content across all major platforms from one powerful dashboard
+            <p className="text-xl text-gray-600 mb-8">
+              The all-in-one social media management platform that saves you time and boosts engagement
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 mb-10">
               <Link 
-                to="/social-scheduler/register" 
+                to="/register" 
                 className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors text-center"
               >
-                Start Free Trial
+                Start Your Free Trial
               </Link>
               <div className="bg-white px-8 py-3 rounded-lg text-lg font-medium shadow-sm flex items-center justify-center">
                 <GoogleLogin
@@ -76,274 +106,537 @@ export default function LandingPage() {
                 />
               </div>
             </div>
+            <div className="flex items-center space-x-4">
+            <div className="flex -space-x-2">
+                <img src="./images/ava1.jpg" alt="User 1" className="w-10 h-10 rounded-full border-2 border-white" />
+                <img src="./images/ava2.jpg" alt="User 2" className="w-10 h-10 rounded-full border-2 border-white" />
+                <img src="./images/ava3.jpg" alt="User 3" className="w-10 h-10 rounded-full border-2 border-white" />
+                <img src="./images/ava4.jpg" alt="User 4" className="w-10 h-10 rounded-full border-2 border-white" />
+              </div>
+              <div>
+                <p className="text-gray-600">Trusted by <span className="font-bold">10,000+</span> marketers</p>
+                <div className="flex items-center">
+                  {[...Array(5)].map((_, i) => (
+                    <i key={i} className="fas fa-star text-yellow-400"></i>
+                  ))}
+                  <span className="ml-2 text-gray-600">4.9/5</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="md:w-1/2">
+          <div className="md:w-1/2 relative">
             <img 
               src={heroImage} 
               alt="Social media dashboard" 
-              className="rounded-xl shadow-xl w-full max-w-2xl mx-auto"
+              className="rounded-xl shadow-xl w-full max-w-2xl mx-auto border-8 border-white"
+            />
+            <div className="absolute -bottom-5 -right-5 bg-white p-4 rounded-lg shadow-lg hidden md:block">
+              <div className="flex items-center">
+                <div className="bg-green-100 rounded-full p-2 mr-3">
+                  <i className="fas fa-check-circle text-green-500 text-xl"></i>
+                </div>
+                <div>
+                  <p className="font-bold">Post Published!</p>
+                  <p className="text-sm text-gray-500">Your content is now live</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+{/* Platform Integration Section */}
+<section className="relative py-16 overflow-hidden">
+  {/* Background Image - Fixed */}
+  <div className="absolute inset-0 z-0">
+    <img 
+      src="./images/1.jpg" 
+      alt="Social media background"
+      className="w-full h-full object-cover opacity-30"
+    />
+  </div>
+  
+  {/* Content - Moves with scroll */}
+  <div className="container mx-auto px-6 relative z-10">
+    <h2 className="text-4xl text-center text-gray-800 mb-6 font-bold">
+      Connect All Your Social Accounts
+    </h2>
+    <p className="text-xl text-center text-gray-600 mb-12 max-w-3xl mx-auto">
+      Schedule posts, track performance, and engage with your audience across all major platforms
+    </p>
+    <div className="flex flex-wrap justify-center gap-10 md:gap-16 py-8">
+      {Object.entries(platformLogos).map(([platform, logo]) => (
+        <div key={platform} className="group transform hover:scale-105 transition-transform duration-300">
+          <div className="relative w-32 h-32 rounded-full bg-white shadow-md flex items-center justify-center border-2 border-gray-200 hover:border-blue-300 transition-all duration-300">
+            <img 
+              src={logo} 
+              alt={platform} 
+              className="h-16 w-16 object-contain"
+              title={platform.charAt(0).toUpperCase() + platform.slice(1)}
             />
           </div>
-        </div>
-      </section>
-
-      {/* Platform Logos Section */}
-      <section className="bg-white py-12">
-        <div className="container mx-auto px-6">
-          <h2 className="text-2xl text-center text-gray-600 mb-8">
-            Trusted by brands on all major platforms
-          </h2>
-          <div className="flex flex-wrap justify-center gap-6 md:gap-10">
-            {Object.entries(platformLogos).map(([platform, logo]) => (
-              <div key={platform} className="p-4 hover:scale-110 transition-transform">
-                <img 
-                  src={logo} 
-                  alt={platform} 
-                  className="h-25 w-25 object-contain opacity-70 hover:opacity-100" 
-                  title={platform.charAt(0).toUpperCase() + platform.slice(1)}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Alternating Feature Sections */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-6">
-          {/* Feature 1 */}
-          <div className="flex flex-col md:flex-row items-center mb-20">
-            <div className="md:w-1/2 mb-10 md:mb-0 md:pr-10">
-              <div className="bg-blue-100 text-blue-600 rounded-full w-16 h-16 flex items-center justify-center mb-6">
-                <i className="fas fa-clock text-2xl"></i>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">10x Efficiency</h3>
-              <p className="text-gray-600">
-                Reduce social media management time from hours to minutes with our bulk scheduling and automation tools.
-                Focus on creating great content while we handle the publishing.
-              </p>
-            </div>
-            <div className="md:w-1/2 md:pl-10">
-              <div className="bg-white p-6 rounded-xl shadow-md">
-                <img 
-                  src="./images/Efficiency.jpeg" 
-                  alt="Efficiency dashboard" 
-                  className="rounded-lg w-full sm:w-4/5 md:w-full lg:w-3/4 xl:w-2/3 mx-auto border border-white/10 shadow-lg shadow-gray-200/3" // Responsive widths
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Feature 2 */}
-          <div className="flex flex-col md:flex-row items-center mb-20">
-            <div className="md:w-1/2 mb-10 md:mb-0 md:order-last md:pl-10">
-              <div className="bg-purple-100 text-purple-600 rounded-full w-16 h-16 flex items-center justify-center mb-6">
-                <i className="fas fa-chart-pie text-2xl"></i>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">Data-Driven Results</h3>
-              <p className="text-gray-600">
-                Our AI analyzes your performance to recommend optimal posting times and content strategies.
-                Get actionable insights to grow your audience and engagement.
-              </p>
-            </div>
-            <div className="md:w-1/2 md:pr-10">
-              <div className="bg-white p-6 rounded-xl shadow-md">
-                <img 
-                  src="/images/analytics-dashboard.png" 
-                  alt="Analytics dashboard" 
-                  className="rounded-lg w-full"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 mb-10 md:mb-0 md:pr-10">
-              <div className="bg-green-100 text-green-600 rounded-full w-16 h-16 flex items-center justify-center mb-6">
-                <i className="fas fa-users text-2xl"></i>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">Team Collaboration</h3>
-              <p className="text-gray-600">
-                Role-based access, approval workflows, and shared content calendars for seamless teamwork.
-                Manage your entire social team from one dashboard.
-              </p>
-            </div>
-            <div className="md:w-1/2 md:pl-10">
-              <div className="bg-white p-6 rounded-xl shadow-md">
-                <img 
-                  src="/images/team-collab.png" 
-                  alt="Team collaboration" 
-                  className="rounded-lg w-full"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Enhanced Testimonials Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
-            Trusted by 10,000+ Social Media Professionals
-          </h2>
-          <p className="text-xl text-center text-gray-600 mb-16 max-w-2xl mx-auto">
-            Join the community of marketers who transformed their social strategy
-          </p>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                quote: "Cut our social media workload by 70% while doubling engagement. Game changer!",
-                author: "Sarah K.",
-                role: "Digital Marketing Director",
-                avatar: "/avatars/avatar1.jpg"
-              },
-              {
-                quote: "The cross-platform scheduling alone is worth 10x the price. Incredible value.",
-                author: "Michael T.",
-                role: "Content Manager",
-                avatar: "/avatars/avatar2.jpg"
-              },
-              {
-                quote: "Finally a tool that understands the unique needs of social media teams.",
-                author: "Priya M.",
-                role: "Social Media Lead",
-                avatar: "/avatars/avatar3.jpg"
-              }
-            ].map((testimonial, index) => (
-              <div key={index} className="bg-gray-50 p-8 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all">
-                <div className="text-yellow-400 text-2xl mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <i key={i} className="fas fa-star"></i>
-                  ))}
-                </div>
-                <p className="text-gray-700 italic mb-6 text-lg">"{testimonial.quote}"</p>
-                <div className="flex items-center">
-                  <div className="rounded-full w-12 h-12 overflow-hidden mr-4">
-                    <img 
-                      src={testimonial.avatar} 
-                      alt={testimonial.author} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div>
-                    <p className="font-semibold">{testimonial.author}</p>
-                    <p className="text-gray-500 text-sm">{testimonial.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA with Different Background */}
-      {/* <section className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-20">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Transform Your Social Strategy?</h2>
-          <p className="text-xl mb-10 max-w-2xl mx-auto opacity-90">
-            Join the most powerful all-in-one social media management platform
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link 
-              to="/social-scheduler/register" 
-              className="bg-white text-indigo-600 px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-100 transition-colors"
-            >
-              Start Your Free 14-Day Trial
-            </Link>
-            <Link 
-              to="/social-scheduler/demo" 
-              className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-white hover:text-indigo-600 transition-colors"
-            >
-              Request Demo
-            </Link>
-          </div>
-          <p className="mt-6 text-indigo-100">
-            No credit card required • Cancel anytime
+          <p className="mt-4 text-center font-medium text-gray-700 capitalize">
+            {platform}
           </p>
         </div>
-      </section> */}
+      ))}
+    </div>
+  </div>
+</section>
 
-      <div class="cta-section bg-gradient-to-r from-blue-600 to-indigo-700 py-20 px-6 text-center">
-        <div class="max-w-4xl mx-auto">
-          <h1 class="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
-            Get started now. Try <span class="text-yellow-300">MORS@PLANNER</span> free for 30 days.
-          </h1>
-          <p class="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-            Download the app now. Available on the:
-          </p>
-          
-          <div class="flex flex-wrap justify-center gap-4">
-            <a href="#" class="bg-black hover:bg-gray-900 text-white px-8 py-4 rounded-full text-lg font-medium transition-all duration-300 flex items-center gap-2">
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.05.28.05.43zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.945 1.34-1.94 2.71-3.43 2.71-1.517 0-1.9-.88-3.63-.88-1.698 0-2.302.91-3.67.91-1.377 0-2.332-1.26-3.428-2.8-1.287-1.82-2.323-4.63-2.323-7.28 0-4.28 2.797-6.55 5.552-6.55 1.448 0 2.675.95 3.6.95.865 0 2.222-1.01 3.902-1.01.613 0 2.886.06 4.374 2.19-.13.09-2.383 1.37-2.383 4.19 0 3.26 2.854 4.42 2.955 4.45z"></path>
-              </svg>
-              App Store
-            </a>
-            
-            <a href="#" class="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full text-lg font-medium transition-all duration-300 flex items-center gap-2">
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3 20.5v-17c0-.59.34-1.11.84-1.35L13.69 12l-9.85 9.85c-.5-.25-.84-.76-.84-1.35zm13.81-5.38L6.05 21.34l8.49-8.49 2.27 2.27zm3.35-4.31c.34.27.59.68.59 1.19s-.25.92-.59 1.19l-2.01 1.41-2.22-2.22 2.22-2.22 2.01 1.44zm-15.25-1.44l2.22 2.22-8.49 8.49-2.22-2.22 8.49-8.49z"></path>
-              </svg>
-              Play Store
-            </a>
-            
-            <a href="#" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-medium transition-all duration-300 flex items-center gap-2">
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3 12v7.5c0 .83.67 1.5 1.5 1.5S6 20.33 6 19.5V12H3zm5.5-9C7.67 3 7 3.67 7 4.5v15c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-15C10 3.67 9.33 3 8.5 3zm6.5 9v7.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V12h-3z"></path>
-              </svg>
-              Microsoft Store
-            </a>
+      {/* Key Features Grid */}
+<section className="py-20 bg-gray-50">
+  <div className="container mx-auto px-8">
+    <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">
+      Everything You Need to Master Social Media
+    </h2>
+    <p className="text-xl text-center text-gray-600 mb-16 max-w-4xl mx-auto">
+      Powerful tools designed to streamline your workflow and maximize your social media impact
+    </p>
+
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10">
+      {/* Card 1 */}
+      <div className="group bg-white rounded-2xl border border-gray-200 shadow hover:shadow-lg transition-all duration-300 overflow-hidden">
+        <div className="h-56 overflow-hidden rounded-t-2xl">
+          <img
+            src="./images/calender.jpg"
+            alt={features[0].title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+        <div className="p-6">
+          <div className={`${features[0].color} text-3xl mb-3`}>
+            <i className={features[0].icon}></i>
           </div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">{features[0].title}</h3>
+          <p className="text-gray-600">{features[0].description}</p>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      {/* Card 2 */}
+      <div className="group bg-white rounded-2xl border border-gray-200 shadow hover:shadow-lg transition-all duration-300 overflow-hidden">
+        <div className="h-56 overflow-hidden rounded-t-2xl">
+          <img
+            src="./images/ai.jpg"
+            alt={features[1].title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+        <div className="p-6">
+          <div className={`${features[1].color} text-3xl mb-3`}>
+            <i className={features[1].icon}></i>
+          </div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">{features[1].title}</h3>
+          <p className="text-gray-600">{features[1].description}</p>
+        </div>
+      </div>
+
+      {/* Card 3 */}
+      <div className="group bg-white rounded-2xl border border-gray-200 shadow hover:shadow-lg transition-all duration-300 overflow-hidden">
+        <div className="h-56 overflow-hidden rounded-t-2xl">
+          <img
+            src="./images/social.jpg"
+            alt={features[2].title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+        <div className="p-6">
+          <div className={`${features[2].color} text-3xl mb-3`}>
+            <i className={features[2].icon}></i>
+          </div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">{features[2].title}</h3>
+          <p className="text-gray-600">{features[2].description}</p>
+        </div>
+      </div>
+
+      {/* Card 4 */}
+      <div className="group bg-white rounded-2xl border border-gray-200 shadow hover:shadow-lg transition-all duration-300 overflow-hidden">
+        <div className="h-56 overflow-hidden rounded-t-2xl">
+          <img
+            src="./images/performance.jpg"
+            alt={features[3].title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+        <div className="p-6">
+          <div className={`${features[3].color} text-3xl mb-3`}>
+            <i className={features[3].icon}></i>
+          </div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">{features[3].title}</h3>
+          <p className="text-gray-600">{features[3].description}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+      {/* Interactive Demo Section */}
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
+          <div className="flex flex-col md:flex-row items-center">
+            <div className="md:w-1/2 mb-10 md:mb-0 md:pr-10">
+              <h2 className="text-3xl font-bold text-gray-800 mb-6">
+                See How It Works
+              </h2>
+              
+              <div className="mb-8">
+                <div className="flex border-b border-gray-200 mb-6">
+                  <button 
+                    className={`px-4 py-2 font-medium ${activeTab === 'scheduling' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600'}`}
+                    onClick={() => setActiveTab('scheduling')}
+                  >
+                    Scheduling
+                  </button>
+                  <button 
+                    className={`px-4 py-2 font-medium ${activeTab === 'analytics' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600'}`}
+                    onClick={() => setActiveTab('analytics')}
+                  >
+                    Analytics
+                  </button>
+                  <button 
+                    className={`px-4 py-2 font-medium ${activeTab === 'collaboration' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600'}`}
+                    onClick={() => setActiveTab('collaboration')}
+                  >
+                    Collaboration
+                  </button>
+                </div>
+                
+                <div className="min-h-[200px]">
+                  {activeTab === 'scheduling' && (
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800 mb-3">Effortless Post Scheduling</h3>
+                      <p className="text-gray-600 mb-4">
+                        Plan weeks or months in advance with our intuitive calendar. Drag and drop posts, set them to auto-publish, 
+                        and never miss your optimal posting times again.
+                      </p>
+                      <ul className="space-y-2 text-gray-600">
+                        <li className="flex items-start">
+                          <i className="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                          <span>Bulk upload and schedule hundreds of posts</span>
+                        </li>
+                        <li className="flex items-start">
+                          <i className="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                          <span>Visual content calendar for all platforms</span>
+                        </li>
+                        <li className="flex items-start">
+                          <i className="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                          <span>First comment scheduling for Instagram</span>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {activeTab === 'analytics' && (
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800 mb-3">Actionable Insights</h3>
+                      <p className="text-gray-600 mb-4">
+                        Track what's working with detailed analytics across all your connected accounts. 
+                        Get recommendations to improve your strategy.
+                      </p>
+                      <ul className="space-y-2 text-gray-600">
+                        <li className="flex items-start">
+                          <i className="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                          <span>Engagement rate tracking</span>
+                        </li>
+                        <li className="flex items-start">
+                          <i className="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                          <span>Best times to post analysis</span>
+                        </li>
+                        <li className="flex items-start">
+                          <i className="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                          <span>Competitor benchmarking</span>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {activeTab === 'collaboration' && (
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800 mb-3">Team Workflow</h3>
+                      <p className="text-gray-600 mb-4">
+                        Collaborate seamlessly with your team, clients, or agencies. Assign roles, 
+                        get approvals, and maintain brand consistency.
+                      </p>
+                      <ul className="space-y-2 text-gray-600">
+                        <li className="flex items-start">
+                          <i className="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                          <span>Role-based permissions</span>
+                        </li>
+                        <li className="flex items-start">
+                          <i className="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                          <span>Approval workflows</span>
+                        </li>
+                        <li className="flex items-start">
+                          <i className="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                          <span>Client reporting</span>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <Link 
+                to="/demo" 
+                className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                Watch Full Demo Video
+              </Link>
+            </div>
+            
+            <div className="md:w-1/2">
+              <div className="bg-gray-800 rounded-xl overflow-hidden shadow-xl">
+                <div className="bg-gray-900 p-3 flex items-center">
+                  <div className="flex space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  </div>
+                  <div className="text-white text-sm mx-auto">
+                    {activeTab === 'scheduling' && 'Content Calendar'}
+                    {activeTab === 'analytics' && 'Performance Dashboard'}
+                    {activeTab === 'collaboration' && 'Team Workspace'}
+                  </div>
+                </div>
+                {activeTab === 'scheduling' && (
+  <img 
+    src="./images/social media.jpg" 
+    alt="Scheduling demo"
+    className="w-full h-auto border-t border-gray-700"
+  />
+)}
+{activeTab === 'analytics' && (
+  <img 
+    src="./images/analytics.jpg" 
+    alt="Analytics demo"
+    className="w-full h-auto border-t border-gray-700"
+  />
+)}
+{activeTab === 'collaboration' && (
+  <img 
+    src="./images/colaboration.jpg" 
+    alt="Collaboration demo"
+    className="w-full h-auto border-t border-gray-700"
+  />
+)}
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+<section className="py-20 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+  <div className="container mx-auto px-6 text-center">
+    <h2 className="text-3xl md:text-4xl font-bold mb-6">
+      Ready to Transform Your Social Media Strategy?
+    </h2>
+    <p className="text-xl mb-10 max-w-2xl mx-auto opacity-90">
+      Join thousands of marketers saving time and growing their audience — completely free!
+    </p>
+
+    <div className="max-w-md mx-auto bg-white rounded-lg overflow-hidden shadow-xl">
+      {subscribed ? (
+        <div className="p-8">
+          <div className="bg-green-100 text-green-700 p-4 rounded-lg mb-6">
+            <i className="fas fa-check-circle mr-2"></i>
+            Thank you for subscribing! Check your email for confirmation.
+          </div>
+          <p className="text-gray-700">
+            You now have full access to all features. No fees, ever.
+          </p>
+          <Link 
+            to="/register" 
+            className="inline-block mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          >
+            Go to Dashboard
+          </Link>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="p-8">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Join for Free</h3>
+          <div className="mb-4">
+            <input 
+              type="email" 
+              placeholder="Enter your email" 
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <button 
+            type="submit" 
+            className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors mb-4"
+          >
+            Create Free Account
+          </button>
+          <p className="text-gray-500 text-sm">
+            No credit card needed • 100% Free forever
+          </p>
+        </form>
+      )}
+    </div>
+
+    <div className="mt-12 flex flex-col sm:flex-row justify-center gap-4">
+      <Link 
+        to="/demo" 
+        className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-white hover:text-blue-600 transition-colors"
+      >
+        Request Demo
+      </Link>
+      <Link 
+        to="/features" 
+        className="bg-white text-blue-600 px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-100 transition-colors"
+      >
+        See All Features
+      </Link>
+    </div>
+  </div>
+</section>
+
+      {/* FAQ Section */}
+<section className="py-20 bg-white">
+  <div className="container mx-auto px-4 max-w-6xl">
+    <h2 className="text-3xl font-bold text-center text-blue-600 mb-16">
+      Frequently Asked Questions
+    </h2>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {[
+        {
+          question: "Which social media platforms are currently supported?",
+          answer:
+            "Right now, we support LinkedIn. We're actively working on adding support for more platforms like Instagram, Twitter, and Facebook very soon!",
+        },
+        {
+          question: "Is it really free to use?",
+          answer:
+            "Yes, 100% free! You can sign up, connect your LinkedIn, and start scheduling posts without paying anything.",
+        },
+        {
+          question: "Can I schedule posts for LinkedIn in advance?",
+          answer:
+            "Absolutely! You can create and schedule posts for LinkedIn with full control over content and timing.",
+        },
+        {
+          question: "Will I be able to manage multiple accounts in the future?",
+          answer:
+            "Yes! We're working on adding support for managing multiple accounts and platforms in one place.",
+        },
+        {
+          question: "Is there a mobile app available?",
+          answer:
+            "Not yet, but a mobile app is in development to help you manage and schedule your posts on the go.",
+        },
+        {
+          question: "How can I contact support if I face any issues?",
+          answer:
+            "You can always reach out through our Contact page, and our team will get back to you quickly!",
+        },
+      ].map((faq, index) => (
+        <div
+          key={index}
+          className="bg-yellow-200 rounded-xl shadow-xl w-full"
+        >
+          <div className="bg-blue-900 px-6 py-4 rounded-t-xl">
+            <h3 className="text-white text-lg font-semibold flex items-center">
+              <span className="mr-2">Q:</span> {faq.question}
+            </h3>
+          </div>
+          <div className="px-6 py-4">
+            <p className="text-gray-800 font-medium flex items-start">
+              <span className="mr-2 font-bold">A:</span> {faq.answer}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div className="text-center mt-20">
+      <p className="text-white mb-4 text-lg">Still have questions?</p>
+      <Link
+        to="/contact"
+        className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-300 transition-colors"
+      >
+        Contact Support
+      </Link>
+    </div>
+  </div>
+</section>
+
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white pt-16 pb-8">
+        <div className="container mx-auto px-6">
+          <div className="grid md:grid-cols-5 gap-8">
+            <div className="md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <i className="fas fa-calendar-alt text-2xl text-blue-400"></i>
-                <span className="text-xl font-bold">Social Scheduler</span>
+                <span className="text-xl font-bold">SocialSync</span>
               </div>
-              <p className="text-gray-400">The complete social media command center for modern teams</p>
+              <p className="text-gray-400 mb-6">
+                The complete social media management platform for brands, agencies, and creators.
+              </p>
+              <div className="flex space-x-4">
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <i className="fab fa-twitter text-xl"></i>
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <i className="fab fa-facebook text-xl"></i>
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <i className="fab fa-instagram text-xl"></i>
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <i className="fab fa-linkedin text-xl"></i>
+                </a>
+              </div>
             </div>
+            
             <div>
-              <h4 className="font-bold text-lg mb-4">Platforms</h4>
+              <h4 className="font-bold text-lg mb-4">Product</h4>
               <ul className="space-y-2 text-gray-400">
-                {Object.keys(platformLogos).map(platform => (
-                  <li key={platform}>
-                    <a href="#" className="hover:text-white transition-colors">
-                      {platform.charAt(0).toUpperCase() + platform.slice(1)}
-                    </a>
-                  </li>
-                ))}
+                <li><Link to="/features" className="hover:text-white transition-colors">Features</Link></li>
+                <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
+                <li><Link to="/integrations" className="hover:text-white transition-colors">Integrations</Link></li>
+                <li><Link to="/updates" className="hover:text-white transition-colors">Updates</Link></li>
               </ul>
             </div>
+            
             <div>
               <h4 className="font-bold text-lg mb-4">Resources</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">API Docs</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
+                <li><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></li>
+                <li><Link to="/help" className="hover:text-white transition-colors">Help Center</Link></li>
+                <li><Link to="/webinars" className="hover:text-white transition-colors">Webinars</Link></li>
+                <li><Link to="/community" className="hover:text-white transition-colors">Community</Link></li>
               </ul>
             </div>
+            
             <div>
               <h4 className="font-bold text-lg mb-4">Company</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
+                <li><Link to="/about" className="hover:text-white transition-colors">About Us</Link></li>
+                <li><Link to="/careers" className="hover:text-white transition-colors">Careers</Link></li>
+                <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+                <li><Link to="/press" className="hover:text-white transition-colors">Press</Link></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            &copy; {new Date().getFullYear()} Social Scheduler. All rights reserved.
+          
+          <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <div className="text-gray-400 mb-4 md:mb-0">
+              &copy; {new Date().getFullYear()} SocialSync. All rights reserved.
+            </div>
+            <div className="flex space-x-6">
+              <Link to="/privacy" className="text-gray-400 hover:text-white transition-colors">Privacy</Link>
+              <Link to="/terms" className="text-gray-400 hover:text-white transition-colors">Terms</Link>
+              <Link to="/cookies" className="text-gray-400 hover:text-white transition-colors">Cookies</Link>
+            </div>
           </div>
         </div>
       </footer>
